@@ -35,7 +35,7 @@ module checker
   pintar_datos_lectura      =   4'd10,        //  We print the previous entered data
   pintar_datos_lectura2     =   4'd11,        //  We print the previous entered data
   testeo                    =   4'd12;        //  TO BE FINISHED
-  
+
 
 
 
@@ -74,9 +74,9 @@ module checker
       rx_buffer2<=0;
       dato_binario<=0;
       dato_binario2<=0;
-      
-                 mem <= 1'b0;
-           rw <= 1'b1;
+
+      mem <= 1'b0;
+      rw <= 1'b1;
 
 
     end
@@ -86,7 +86,7 @@ module checker
 
 
       bienvenida:begin
-                 mem <= 1'b0;
+        mem <= 1'b0;
 
         if (tx_ready)
           count_tx_ready <= count_tx_ready + 1;
@@ -340,9 +340,9 @@ module checker
             //          state_reg<=testeo;
             begin    w_data<="Z";  state_reg<=idle_and_receive; end    
 
-        //  else 
-            //state_reg<=idle_and_receive;
-      //      begin      w_data<="X"; state_reg<=idle_and_receive; end    
+          //  else 
+          //state_reg<=idle_and_receive;
+          //      begin      w_data<="X"; state_reg<=idle_and_receive; end    
 
         end
 
@@ -528,8 +528,8 @@ module checker
       pintar_datos_escritura:
         begin
 
-           mem <= 1'b1;
-        rw <= 1'b1;
+          mem <= 1'b1;
+          rw <= 1'b1;
 
 
           if (tx_ready)
@@ -637,15 +637,15 @@ module checker
             end
           else
             begin
-            //  mem = 1'b1;
-            //  rw = 1'b1;
+              //  mem = 1'b1;
+              //  rw = 1'b1;
               state_reg<=lectura2;
               count_write <= 0;
               tx_start<=1'b0;
               count_tx_ready <= 0;
               count_read <= 0;
-              
- 
+
+
             end	
         end
 
@@ -689,14 +689,14 @@ module checker
       pintar_datos_lectura:
         begin
 
-//dato_binario3
+          //dato_binario3
 
 
-    
-              mem<=1;
-              rw<=1;
 
-///
+          mem<=1;
+          rw<=1;
+
+          ///
 
           if (tx_ready)
             count_tx_ready <= count_tx_ready + 1;
@@ -729,7 +729,7 @@ module checker
             end
           else
             begin
-              state_reg<=bienvenida;
+              state_reg<=pintar_datos_lectura2;
               count_write <= 0;
               tx_start<=1'b0;
               count_tx_ready <= 0;
@@ -738,21 +738,23 @@ module checker
         end
 
 
-pintar_datos_lectura2:begin
-//dato_desde_sram =  data_s2f_r;
+      pintar_datos_lectura2:begin
+        //dato_desde_sram =  data_s2f_r;
 
 
-          tx_start<=1;
-          w_data<=data_s2f_r;
-state_reg<=bienvenida;
+        tx_start<=1;
+        w_data<=data_s2f_r;	//PINTAMOS EL DATO RECOGIDO DE LA RAM (DATO REGISTRADO, ES DECIR QUE HA PASADO POR UN FF)
+        state_reg<=bienvenida;
 
-end
+      end
 
 
 
     endcase
-    
-    assign addr = (rw) ? {10'b00_0000_0000, dato_binario3} : {10'b00_0000_0000, dato_binario2} ;
-    assign data_f2s = (~rw) ? dato_binario : 8'bz;
+
+//	NOTA: PARA ESTA PRIMERA VERSIÓN, SOLO MANEJAREMOS LAS DIRECCIONES LAS 256 PRIMERAS DIRECCIONES
+//	ES DECIR, LAS DIRECCIONES: 00000_00000_XXXX_XXXX
+  assign addr = (rw) ? {10'b00_0000_0000, dato_binario3} : {10'b00_0000_0000, dato_binario2} ; 
+  assign data_f2s = (~rw) ? dato_binario : 8'bz;
 
   endmodule

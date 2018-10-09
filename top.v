@@ -1,34 +1,27 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-//
-// Description: Top level module containing an UART and a checker module.
-//	The checker module, gets the bytes coming from the receiver module and 
-// adds one bit. Doing this, we can check the receiver and the transmitter module
-// of the UART.
-// The baud rate generator is configured for a 50Mhz clock. It accepts input 
-// parameters, as well as the rx and tx modules.
-//
-//////////////////////////////////////////////////////////////////////////////////
+
+
+
 module top
-( 
+  ( 
     input wire clk,
     input wire reset,
     input wire data_in,
     output wire data_out,
-	 
-	 // to/from SRAM
- output wire [18:0] ad,   
-inout wire [7:0] dio_a, 
-	 output wire we_n,
-	 output wire oe_n,
-	 output wire ce_a_n
-	 );
 
-wire [7:0] r_data_bus;
-wire [7:0] w_data_bus;
-wire [7:0] data_f2s_bus;
-wire [7:0] data_s2f_r_bus;
-wire [18:0] addr_bus;
+    // to/from SRAM
+    output wire [18:0] ad,   
+    inout wire [7:0] dio_a, 
+    output wire we_n,
+    output wire oe_n,
+    output wire ce_a_n
+  );
+
+  wire [7:0] r_data_bus;
+  wire [7:0] w_data_bus;
+  wire [7:0] data_f2s_bus;
+  wire [7:0] data_s2f_r_bus;
+  wire [18:0] addr_bus;
 
   wire button_wire;
 
@@ -41,7 +34,7 @@ wire [18:0] addr_bus;
   );
 
 
-uart uart_unit (
+  uart uart_unit (
     .clk(clk), 
     .reset(button_wire), 
     .data_in(data_in), 
@@ -53,12 +46,12 @@ uart uart_unit (
     .r_data(r_data_bus),
     .tx_ready(tx_ready)
 
-    );
+  );
 
 
 
-// Instantiate the module
-checker checker_unit (
+  // Instantiate the module
+  checker checker_unit (
     .clk(clk), 
     .reset(button_wire), 
     .rx_done_tick(rx_done_tick), 
@@ -71,27 +64,47 @@ checker checker_unit (
     .addr(addr_bus), 
     .data_s2f_r(data_s2f_r_bus), 
     .data_f2s(data_f2s_bus)
-    );
-	 
-	 
-	 
-	 
-// Instantiate the module
-sram_ctrl sram_ctrl_unit (
-    .clk(clk), 
-    .reset(reset), 
-    .mem(mem), 
-    .rw(rw), 
-    .addr(addr_bus), 
-    .data_f2s(data_f2s_bus), 
-    .ready(ready), 
-    .data_s2f_r(data_s2f_r_bus), 
-    .data_s2f_ur(data_s2f_ur), 
-    .ad(ad), 
-    .we_n(we_n), 
-    .oe_n(oe_n), 
-    .dio_a(dio_a), 
-    .ce_a_n(ce_a_n)
+  );
+
+
+
+    //	 
+    //	 // Instantiate the module
+    //    controller_for_sram_is61lv25616al sram_controller (
+    //        .clock_50_mhz_input(clk), 
+    //        .read_or_write_input(rw), 
+    //        .start_input(mem), 
+    //        .address_input(addr_bus), 
+    //        .data_input(data_f2s_bus), 
+    //        .data_from_to_sram_input_output(dio_a), 
+    //        .address_to_sram_output(ad), 
+    //        .ce_to_sram_output(ce_a_n), 
+    //        .oe_to_sram_output(oe_n), 
+    //        .we_to_sram_output(we_n), 
+    //        .data_output(data_s2f_r_bus), 
+    //        .data_ready_signal_output(data_ready_signal_output), 
+    //        .writing_finished_signal_output(writing_finished_signal_output), 
+    //        .busy_signal_output(busy_signal_output)
+    //        );
+
+
+
+    // Instantiate the module
+    sram_ctrl sram_ctrl_unit (
+      .clk(clk), 
+      .reset(reset), 
+      .mem(mem), 
+      .rw(rw), 
+      .addr(addr_bus), 
+      .data_f2s(data_f2s_bus), 
+      .ready(ready), 
+      .data_s2f_r(data_s2f_r_bus), 
+      .data_s2f_ur(data_s2f_ur), 
+      .ad(ad), 
+      .we_n(we_n), 
+      .oe_n(oe_n), 
+      .dio_a(dio_a), 
+      .ce_a_n(ce_a_n)
     );
 
-endmodule
+    endmodule

@@ -48,7 +48,7 @@ initial
 		oe_to_sram_output<=1'b1;
 		we_to_sram_output<=1'b1;
 		
-	    state_reg <= idle;
+        state_reg <= idle;
 		
 		register_for_reading_data[7:0]<=8'b0000_0000;
 		register_for_writing_data[7:0]<=8'b0000_0000;

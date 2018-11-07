@@ -18,7 +18,7 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, address_to_sram_output, we_to_sram_output, oe_to_sram_output, ce_to_sram_output, data_from_to_sram_input_output, data_ready_signal_output, writing_finished_signal_output, busy_signal_output);
+module sram_ctrl4(clk, start_operation, rw, address_input, data_f2s, data_s2f, address_to_sram_output, we_to_sram_output, oe_to_sram_output, ce_to_sram_output, data_from_to_sram_input_output, data_ready_signal_output, writing_finished_signal_output, busy_signal_output);
 
   input wire clk ;                                 //  Clock signal
 
@@ -92,12 +92,12 @@ module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
         idle: 
           begin   
             if(~start_operation)
-              state_reg = idle;
+              state_reg <= idle;
             else begin
               if(rw)
-                state_reg = rd0;
+                state_reg <= rd0;
               else  
-                state_reg = wr0;
+                state_reg <= wr0;
             end
           end
         rd0:
@@ -106,7 +106,7 @@ module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
 
             address_to_sram_output[18:0]<=address_input[18:0];
 
-            state_reg = rd1;
+            state_reg <= rd1;
           end   
 
         rd1:
@@ -115,7 +115,7 @@ module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
             oe_to_sram_output<=1'b0;
             we_to_sram_output<=1'b1;
 
-            state_reg = rd2;
+            state_reg <= rd2;
           end
 
         rd2:
@@ -123,7 +123,7 @@ module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
             register_for_reading_data[7:0]<=data_from_to_sram_input_output[7:0];
             data_ready_signal_output<=1'b1;
 
-            state_reg = rd3;
+            state_reg <= rd3;
           end
 
         rd3:
@@ -136,7 +136,7 @@ module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
 
             data_ready_signal_output<=1'b0;
 
-            state_reg = idle;
+            state_reg <= idle;
           end
 
         wr0:
@@ -146,7 +146,7 @@ module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
             address_to_sram_output[18:0]<=address_input[18:0];
             register_for_writing_data[7:0]<=data_f2s[7:0];
 
-            state_reg = wr1;
+            state_reg <= wr1;
           end
 
         wr1:
@@ -157,7 +157,7 @@ module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
 
             register_for_splitting<=1'b1;
 
-            state_reg = wr2;
+            state_reg <= wr2;
 
           end
 
@@ -166,7 +166,7 @@ module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
             register_for_splitting<=1'b0;
             writing_finished_signal_output<=1'b1;
 
-            state_reg = wr3;
+            state_reg <= wr3;
           end
 
         wr3:
@@ -181,7 +181,7 @@ module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
             writing_finished_signal_output<=1'b0;
 
 
-            state_reg = idle;
+            state_reg <= idle;
 
           end
 

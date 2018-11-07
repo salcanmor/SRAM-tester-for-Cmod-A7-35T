@@ -18,7 +18,7 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, address_to_sram_output, we_to_sram_output, oe_to_sram_output, ce_to_sram_output, data_from_to_sram_input_output);
+module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, address_to_sram_output, we_to_sram_output, oe_to_sram_output, ce_to_sram_output, data_from_to_sram_input_output, data_ready_signal_output, writing_finished_signal_output, busy_signal_output);
 
   input wire clk ;                                 //  Clock signal
 
@@ -36,6 +36,11 @@ module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
   output reg ce_to_sram_output;                    //  Chip enable (active-low). Disables or enables the chip.
 
   inout wire [7:0] data_from_to_sram_input_output; //  Data bus
+
+  output reg data_ready_signal_output;             //   Ready signal
+  output reg writing_finished_signal_output;       //   Writing finished signal
+  output reg busy_signal_output;                   //   Busy signal
+
 
 
   //FSM states declaration
@@ -58,22 +63,26 @@ module sram_ctrl3(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
 
   reg register_for_splitting;
 
-initial
-	begin
-	
-			
-		ce_to_sram_output<=1'b1;
-		oe_to_sram_output<=1'b1;
-		we_to_sram_output<=1'b1;
-		
-		state_reg <= idle;
-		
-		register_for_reading_data[7:0]<=8'b0000_0000;
-		register_for_writing_data[7:0]<=8'b0000_0000;
-		
-		register_for_splitting<=1'b0;
-		
-	end
+  initial
+    begin
+
+      ce_to_sram_output<=1'b1;
+      oe_to_sram_output<=1'b1;
+      we_to_sram_output<=1'b1;
+
+      state_reg <= idle;
+
+      register_for_reading_data[7:0]<=8'b0000_0000;
+      register_for_writing_data[7:0]<=8'b0000_0000;
+
+      register_for_splitting<=1'b0;
+
+      data_ready_signal_output<=1'b0;
+      writing_finished_signal_output<=1'b0;
+      busy_signal_output<=1'b0;
+
+
+    end
 
 
   always@(posedge clk)
@@ -93,6 +102,8 @@ initial
           end
         rd0:
           begin
+            busy_signal_output<=1'b1;
+
             address_to_sram_output[18:0]<=address_input[18:0];
 
             state_reg = rd1;
@@ -110,6 +121,7 @@ initial
         rd2:
           begin
             register_for_reading_data[7:0]<=data_from_to_sram_input_output[7:0];
+            data_ready_signal_output<=1'b1;
 
             state_reg = rd3;
           end
@@ -120,11 +132,17 @@ initial
             oe_to_sram_output<=1'b1;
             we_to_sram_output<=1'b1;
 
+            busy_signal_output<=1'b0;
+
+            data_ready_signal_output<=1'b0;
+
             state_reg = idle;
           end
 
         wr0:
           begin
+            busy_signal_output<=1'b1;
+
             address_to_sram_output[18:0]<=address_input[18:0];
             register_for_writing_data[7:0]<=data_f2s[7:0];
 
@@ -146,15 +164,22 @@ initial
         wr2:
           begin
             register_for_splitting<=1'b0;
+            writing_finished_signal_output<=1'b1;
+
             state_reg = wr3;
           end
 
         wr3:
           begin
 
+            busy_signal_output<=1'b0;
+
             ce_to_sram_output<=1'b1;
             oe_to_sram_output<=1'b1;
             we_to_sram_output<=1'b1;
+
+            writing_finished_signal_output<=1'b0;
+
 
             state_reg = idle;
 

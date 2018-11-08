@@ -45,15 +45,11 @@ module sram_ctrl4(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
 
   //FSM states declaration
   localparam [4:0]
-  rd0     =   3'b000,
-  rd1     =   3'b001,
-  rd2     =   3'b010,
-  rd3     =   3'b011,
-  wr0     =   3'b100,
-  wr1     =   3'b101,
-  wr2     =   3'b110,
-  wr3     =   3'b111,
-  idle    =   4'b1000;
+  rd0     =   3'd1,
+  rd1     =   3'd2,
+  wr0     =   3'd3,
+  wr1     =   3'd4,
+  idle    =   4'd5;
 
   //	signal declaration
   reg [3:0] state_reg;
@@ -127,19 +123,11 @@ module sram_ctrl4(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
 
             address_to_sram_output[18:0]<=address_input[18:0];
 
-            state_reg <= rd2;
+            state_reg <= rd1;
           end   
 
-        //        rd1:
-        //          begin
-        //            ce_to_sram_output<=1'b0;
-        //            oe_to_sram_output<=1'b0;
-        //            we_to_sram_output<=1'b1;
 
-        //            state_reg <= rd2;
-        //          end
-
-        rd2:
+        rd1:
           begin
             register_for_reading_data[7:0]<=data_from_to_sram_input_output[7:0];
             data_ready_signal_output<=1'b1;
@@ -147,18 +135,6 @@ module sram_ctrl4(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
             state_reg <= idle;
           end
 
-        //        rd3:
-        //          begin
-        //            ce_to_sram_output<=1'b1;
-        //            oe_to_sram_output<=1'b1;
-        //            we_to_sram_output<=1'b1;
-
-        //            busy_signal_output<=1'b0;
-
-        //            data_ready_signal_output<=1'b0;
-
-        //            state_reg <= idle;
-        //          end
 
         //============================== WRITING PHASE ==============================
 
@@ -188,26 +164,6 @@ module sram_ctrl4(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
 
           end
 
-        //        wr2:
-        //          begin
-        //            register_for_splitting<=1'b0;
-        //            writing_finished_signal_output<=1'b1;
-
-        //            state_reg <= idle;
-        //          end
-
-        //        wr3:
-        //          begin
-        //            busy_signal_output<=1'b0;
-
-        //            ce_to_sram_output<=1'b1;
-        //            oe_to_sram_output<=1'b1;
-        //            we_to_sram_output<=1'b1;
-
-        //            writing_finished_signal_output<=1'b0;
-
-        //            state_reg <= idle;
-        //          end
 
       endcase
 

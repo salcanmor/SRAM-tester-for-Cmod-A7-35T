@@ -95,9 +95,6 @@ module sram_ctrl4(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
             register_for_splitting<=1'b0;
             writing_finished_signal_output<=1'b1;
 
-            busy_signal_output<=1'b0;
-
-            writing_finished_signal_output<=1'b0;
 
             ce_to_sram_output<=1'b1;
             oe_to_sram_output<=1'b1;
@@ -168,6 +165,9 @@ module sram_ctrl4(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
 
         wr0:
           begin
+
+            writing_finished_signal_output<=1'b0;
+
             busy_signal_output<=1'b1;
 
             address_to_sram_output[18:0]<=address_input[18:0];

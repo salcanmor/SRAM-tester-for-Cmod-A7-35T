@@ -26,8 +26,8 @@ module sram_ctrl5(clk, start_operation, rw, address_input, data_f2s, data_s2f, a
 
   //FSM states declaration
   localparam [1:0]
-  idle     =   2'b00,
-  rd0     =   2'b01,
+  idle   =   2'b00,
+  rd0    =   2'b01,
   wr0    =   2'b10;
 
   //	signal declaration
